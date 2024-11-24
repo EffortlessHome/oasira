@@ -8,4 +8,4 @@ STEP_ANALYTICS = "analytics"
 
 STEPS = [STEP_USER, STEP_CORE_CONFIG, STEP_ANALYTICS, STEP_INTEGRATION]
 
-DEFAULT_AREAS = ("living_room", "kitchen", "bedroom")
+DEFAULT_AREAS = () #("living_room", "kitchen", "bedroom")
