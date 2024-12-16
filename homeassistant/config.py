@@ -61,11 +61,27 @@ default_config:
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes
+  development_repo: /media/develop/oasiranew/frontend
 
 automation: !include {AUTOMATION_CONFIG_PATH}
 script: !include {SCRIPT_CONFIG_PATH}
 scene: !include {SCENE_CONFIG_PATH}
-"""
+
+homeassistant:
+  packages: !include_dir_merge_named oasira_packages/
+  customize: !include oasira_customize.yaml
+  auth_providers:
+    - type: oasira
+      oasira_systemid: ""
+      oasira_dev_mode: "off"
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 192.168.1.0/24
+    - 192.168.0.0/24
+
+    """
 DEFAULT_SECRETS = """
 # Use this file to store secrets like usernames and passwords.
 # Learn more at https://www.home-assistant.io/docs/configuration/secrets/
@@ -163,6 +179,9 @@ async def async_create_default_config(hass: HomeAssistant) -> bool:
     return await hass.async_add_executor_job(
         _write_default_config, hass.config.config_dir
     )
+
+
+# TODO:JC revise this code for Oasira default configuration
 
 
 def _write_default_config(config_dir: str) -> bool:

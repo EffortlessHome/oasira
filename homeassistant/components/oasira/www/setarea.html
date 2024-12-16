@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Set Areas for Entities</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f0f0f0;
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+      }
+      .entity-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .entity-card h3 {
+        font-size: 18px;
+        margin: 0 0 10px;
+      }
+      select {
+        width: 100%;
+        padding: 5px;
+        font-size: 14px;
+      }
+      button {
+        margin-top: 10px;
+        padding: 8px 12px;
+        font-size: 14px;
+        color: white;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .message {
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        border-radius: 4px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Set Areas for Entities</h1>
+    <div class="grid-container" id="entity-grid"></div>
+    <div class="message" id="success-message">Areas updated successfully!</div>
+
+    <script>
+      const HASS_TOKEN =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIwMWFjM2QwNjQ2N2E0Y2ExODBmMzYzNzQyMzg1ZjE3MyIsImlhdCI6MTczMzA5Njk3MCwiZXhwIjoyMDQ4NDU2OTcwfQ.76UByYUz4ZrKTCopEEQQTE4Xlw5g9dkK9ZC-Ei_546s"; // Replace with a valid token
+      const HASS_URL = "http://localhost:8123"; // Replace with your HA URL
+
+      const gridContainer = document.getElementById("entity-grid");
+      const successMessage = document.getElementById("success-message");
+
+      async function fetchData(endpoint) {
+        const response = await fetch(`${HASS_URL}/api/${endpoint}`, {
+          headers: {
+            Authorization: `Bearer ${HASS_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) throw new Error(`Failed to fetch ${endpoint}`);
+        return await response.json();
+      }
+
+      async function getEntities() {
+        const states = await fetchData("states");
+        return states.filter(
+          (entity) => !entity.entity_id.startsWith("group."),
+        );
+      }
+
+      async function getAreas() {
+        return await fetchData("areas");
+      }
+
+      async function setEntityArea(entityId, areaId) {
+        await fetch(`${HASS_URL}/api/config/entity_registry/${entityId}`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${HASS_TOKEN}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ area_id: areaId }),
+        });
+      }
+
+      async function createGrid() {
+        try {
+          const entities = await getEntities();
+          const areas = await getAreas();
+
+          entities.forEach((entity) => {
+            const card = document.createElement("div");
+            card.className = "entity-card";
+
+            const title = document.createElement("h3");
+            title.textContent =
+              entity.attributes.friendly_name || entity.entity_id;
+            card.appendChild(title);
+
+            const select = document.createElement("select");
+            select.innerHTML = '<option value="">Select Area</option>';
+            areas.forEach((area) => {
+              const option = document.createElement("option");
+              option.value = area.area_id;
+              option.textContent = area.name;
+              select.appendChild(option);
+            });
+            card.appendChild(select);
+
+            const button = document.createElement("button");
+            button.textContent = "Set Area";
+            button.onclick = async () => {
+              const selectedArea = select.value;
+              if (!selectedArea) {
+                alert("Please select an area.");
+                return;
+              }
+              await setEntityArea(entity.entity_id, selectedArea);
+              successMessage.style.display = "block";
+              setTimeout(() => (successMessage.style.display = "none"), 3000);
+            };
+            card.appendChild(button);
+
+            gridContainer.appendChild(card);
+          });
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+
+      createGrid();
+    </script>
+  </body>
+</html>

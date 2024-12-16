@@ -1,0 +1,14 @@
+EffortlessHome:
+  accent-color: orange
+  modes:
+    light:
+      secondary-text-color: slategray
+      primary-color: black
+      text-primary-color: white
+      lovelace-background: 'left no-repeat url("/local/ehvirtualbackground.png")'
+
+    dark:
+      secondary-text-color: white
+      primary-color: slategray
+      text-primary-color: white
+      lovelace-background: 'left no-repeat url("/local/ehvirtualbackground.png")'

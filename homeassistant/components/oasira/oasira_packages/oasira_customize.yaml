@@ -1,0 +1,10 @@
+light.diningcabinettop:
+  entity_picture: /local/devices/ledstrip.png
+light.mbrbedlights:
+  entity_picture: /local/devices/ledstrip.png
+light.kitchencabinetlight:
+  entity_picture: /local/devices/ledstrip.png
+light.desklight:
+  entity_picture: /local/devices/ledstrip.png
+lock.doorlock:
+  entity_picture: /local/devices/codelock.png
