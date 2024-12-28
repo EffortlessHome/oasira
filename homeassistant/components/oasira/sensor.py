@@ -11,8 +11,26 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.sun import get_astral_event_date
 from homeassistant.util import dt as dt_util
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity_platform import async_get_platforms
+from homeassistant.helpers.event import async_track_state_change
+from homeassistant.helpers.entity import async_generate_entity_id
+from homeassistant.components.light import DOMAIN as LIGHT_DOMAIN
+from homeassistant.helpers import entity_registry as er
+from .virtualpowersensor import (
+    VirtualPowerSensor,
+    FakeDeviceVirtualPowerSensor,
+    TotalEnergySensor,
+)
 
 from .const import DOMAIN
+
+FAKE_DEVICE_TYPES = {
+    "Ceiling Fan": (50, 75),
+    "Laptop Charger": (30, 60),
+    "Desktop Computer": (100, 250),
+    "Fridge": (100, 800),
+}
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,19 +52,6 @@ async def async_setup_entry(
     async_add_entities([VirtualIlluminanceSensor()])
     async_add_entities([HighTemperatureTomorrowSensor()])
 
-    async_add_entities(
-        [OasiraConfigSensor("WakeTime", config_entry.options.get("Wake Time"))]
-    )
-    async_add_entities(
-        [OasiraConfigSensor("SleepTime", config_entry.options.get("Sleep Time"))]
-    )
-    async_add_entities(
-        [
-            OasiraConfigSensor(
-                "MaintenanceTime", config_entry.options.get("Maintenance Time")
-            )
-        ]
-    )
     async_add_entities(
         [
             OasiraConfigSensor(
@@ -74,6 +79,35 @@ async def async_setup_entry(
     async_add_entities(
         [OasiraConfigSensor("HighHumidity", config_entry.options.get("High Humidity"))]
     )
+
+    # TODO: Jermie replace with configured fake power sensors for total power usage monitoring
+    fakeentities = []
+    for device_type, (min_wattage, max_wattage) in FAKE_DEVICE_TYPES.items():
+        fakeentities.append(
+            FakeDeviceVirtualPowerSensor(device_type, min_wattage, max_wattage)
+        )
+
+    async_add_entities(fakeentities)
+
+    powerentities = []
+
+    entity_registry = er.async_get(hass)
+    all_entities = entity_registry.entities.values()
+
+    for entity in all_entities:
+        if entity.entity_id.startswith("climate."):
+            virtual_sensor = VirtualPowerSensor(hass, entity.entity_id, 1500.0)
+            powerentities.append(virtual_sensor)
+        elif entity.entity_id.startswith("light"):
+            virtual_sensor = VirtualPowerSensor(hass, entity.entity_id, 20.0)
+            powerentities.append(virtual_sensor)
+        elif entity.entity_id.startswith("media_player."):
+            virtual_sensor = VirtualPowerSensor(hass, entity.entity_id, 100.0)
+            powerentities.append(virtual_sensor)
+
+    async_add_entities(powerentities)
+
+    async_add_entities([TotalEnergySensor(hass)])
 
 
 class AlarmIDSensor(SensorEntity):

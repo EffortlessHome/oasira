@@ -10,10 +10,15 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers import area_registry
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity_platform import async_get_platforms
+from homeassistant.helpers.event import async_track_state_change
+from homeassistant.helpers.entity import async_generate_entity_id
 
 from .auto_area import AutoArea
 from .const import LIGHT_GROUP_ENTITY_PREFIX, LIGHT_GROUP_PREFIX
 from .ha_helpers import get_all_entities
+from .sensor import VirtualPowerSensor
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -56,6 +61,7 @@ async def async_setup_entry(
             async_add_entities(
                 [AutoLightGroup(hass, auto_area, entity_ids=light_entity_ids)]
             )
+
             all_light_entity_ids.extend(light_entity_ids)  # Extend instead of append
 
     # Add an AllLightGroup with all light entities across areas

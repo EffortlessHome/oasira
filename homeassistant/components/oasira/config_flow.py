@@ -1,5 +1,5 @@
 import voluptuous as vol
-
+from typing import List
 from homeassistant import config_entries
 from homeassistant.core import callback
 
@@ -9,6 +9,20 @@ from .const import DOMAIN
 CONF_HOST = "host"
 CONF_API_KEY = "api_key"
 
+FAKE_DEVICE_TYPES = {
+    "LED Bulb": (5, 15),
+    "Incandescent Bulb": (40, 100),
+    "Smart Plug (idle)": (1, 2),
+    "Ceiling Fan": (50, 75),
+    "Laptop Charger": (30, 60),
+    "Desktop Computer": (100, 250),
+    "TV (LED/LCD)": (50, 150),
+    "Refrigerator": (100, 800),
+    "Air Conditioner": (1000, 2500),
+    "Heater": (1000, 1500),
+    "Router": (5, 15),
+}
+
 
 class OasiraConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for the Oasira integration."""
@@ -16,11 +30,30 @@ class OasiraConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = "local_polling"
 
+    def __init__(self):
+        self.selected_devices: List[dict] = []
+
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         errors = {}
 
         if user_input is not None:
+            device_type = user_input["device_type"]
+            name = user_input["name"]
+            wattage_range = FAKE_DEVICE_TYPES[device_type]
+            self.selected_devices.append(
+                {
+                    "device_type": device_type,
+                    "name": name,
+                    "wattage_range": wattage_range,
+                }
+            )
+
+            # if user_input["add_more"]:
+            #    return await self.async_step_user()
+
+            # user_input.append({"devices": self.selected_devices})
+
             return self.async_create_entry(title="Oasira", data=user_input)
 
         # Define schema for options
@@ -59,6 +92,9 @@ class OasiraConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     default=80,
                     description="High humidity percentage",
                 ): int,
+                vol.Required("device_type"): vol.In(FAKE_DEVICE_TYPES.keys()),
+                vol.Required("name"): str,
+                vol.Optional("add_more", default=False): bool,
             }
         )
 

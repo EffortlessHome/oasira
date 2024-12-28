@@ -65,3 +65,12 @@ def is_valid_entity(hass: HomeAssistant, entity: RegistryEntry) -> bool:
         return False
 
     return True
+
+
+def friendly_name_for_entity_id(entity_id: str, hass: HomeAssistant):
+    """Helper to get friendly name for entity."""
+    state = hass.states.get(entity_id)
+    if state and state.attributes.get("friendly_name"):
+        return state.attributes["friendly_name"]
+
+    return entity_id

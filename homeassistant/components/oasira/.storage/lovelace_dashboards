@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace_dashboards",
+  "data": {
+    "items": [
+      {
+        "id": "map",
+        "icon": "mdi:map",
+        "title": "Map",
+        "url_path": "map",
+        "mode": "storage",
+        "require_admin": false,
+        "show_in_sidebar": true
+      },
+      {
+        "id": "custom_config",
+        "show_in_sidebar": true,
+        "title": "Custom Config",
+        "require_admin": true,
+        "mode": "storage",
+        "url_path": "dashboard-custom",
+        "icon": "mdi:alpha-c-box-outline"
+      },
+      {
+        "id": "kitchen_display",
+        "show_in_sidebar": true,
+        "title": "Kitchen Display",
+        "require_admin": false,
+        "mode": "storage",
+        "url_path": "kitchen-display"
+      },
+      {
+        "id": "dashboard_oasiraconfignew",
+        "show_in_sidebar": true,
+        "title": "Oasira Config",
+        "require_admin": true,
+        "mode": "storage",
+        "url_path": "dashboard-oasiraconfignew",
+        "icon": "mdi:alpha-o-box-outline"
+      }
+    ]
+  }
+}

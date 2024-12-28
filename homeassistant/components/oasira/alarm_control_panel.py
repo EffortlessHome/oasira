@@ -3,18 +3,9 @@ import logging
 from homeassistant.components.alarm_control_panel import (
     AlarmControlPanelEntity,
     AlarmControlPanelEntityFeature,
+    AlarmControlPanelState,
 )
-from homeassistant.components.alarm_control_panel.const import (
-    SUPPORT_ALARM_ARM_AWAY,
-    SUPPORT_ALARM_ARM_HOME,
-    SUPPORT_ALARM_TRIGGER,
-)
-from homeassistant.const import (
-    STATE_ALARM_ARMED_AWAY,
-    STATE_ALARM_ARMED_HOME,
-    STATE_ALARM_DISARMED,
-    STATE_ALARM_TRIGGERED,
-)
+
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 
@@ -62,12 +53,8 @@ class OasiraAlarmControlPanel(AlarmControlPanelEntity):
         )
 
         self.hass = hass
-        self._state = STATE_ALARM_DISARMED
+        self._alarmstate = AlarmControlPanelState.DISARMED
         self.hass.data[DOMAIN]["alarm_id"] = ""
-
-    # async def async_update(self) -> None:
-    #    """Update the state of the device."""
-    # print("in alarm async update")
 
     @property
     def name(self):
@@ -75,14 +62,14 @@ class OasiraAlarmControlPanel(AlarmControlPanelEntity):
         return "Oasira Security Alarm"
 
     @property
-    def state(self):
+    def alarm_state(self):
         """Return the state of the alarm control panel."""
-        return self._state
+        return self._alarmstate
 
     @property
     def supported_features(self):
         """Return the supported features of the alarm control panel."""
-        return SUPPORT_ALARM_ARM_HOME | SUPPORT_ALARM_ARM_AWAY | SUPPORT_ALARM_TRIGGER
+        return self._attr_supported_features
 
     @property
     def unique_id(self):
@@ -91,26 +78,27 @@ class OasiraAlarmControlPanel(AlarmControlPanelEntity):
 
     async def async_alarm_disarm(self, code=None):
         """Send disarm command."""
-        self.hass.data[DOMAIN]["alarm_id"] = ""
-        self._state = STATE_ALARM_DISARMED
+
+        self._alarmstate = AlarmControlPanelState.DISARMED
         self.async_write_ha_state()
 
         await async_cancelalarm(self.hass)
 
     async def async_alarm_arm_home(self, code=None):
         """Send arm home command."""
-        self.hass.data[DOMAIN]["alarm_id"] = ""
-        self._state = STATE_ALARM_ARMED_HOME
+
+        self._alarmstate = AlarmControlPanelState.ARMED_HOME
         self.async_write_ha_state()
 
     async def async_alarm_arm_away(self, code=None):
         """Send arm away command."""
-        self.hass.data[DOMAIN]["alarm_id"] = ""
-        self._state = STATE_ALARM_ARMED_AWAY
+
+        self._alarmstate = AlarmControlPanelState.ARMED_AWAY
         self.async_write_ha_state()
 
     async def async_alarm_trigger(self, code=None):
         """Trigger the alarm."""
-        self.hass.data[DOMAIN]["alarm_id"] = ""
-        self._state = STATE_ALARM_TRIGGERED
+
+        self._alarmstate = AlarmControlPanelState.TRIGGERED
+        self.async_write_ha_state()
         await async_creatependingalarm(self.hass, OASIRA_ALARM_TYPE_SECURITY, None)

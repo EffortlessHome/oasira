@@ -12,6 +12,12 @@ import shutil
 import subprocess
 from typing import TYPE_CHECKING
 
+from datetime import UTC, datetime, timedelta
+import random
+import re
+
+import pytz
+
 import aiohttp
 import bcrypt
 from google.ai import generativelanguage_v1beta
@@ -20,6 +26,8 @@ from google.api_core.exceptions import ClientError, DeadlineExceeded, GoogleAPIE
 import google.generativeai as genai
 import google.generativeai.types as genai_types
 import voluptuous as vol
+
+from homeassistant.components.recorder import get_instance
 
 from homeassistant.components.alarm_control_panel import DOMAIN as PLATFORM
 from homeassistant.components.notify import BaseNotificationService
@@ -66,7 +74,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 import homeassistant.util.dt as dt_util
 
 from . import const
-from .ai import AIHASSComponent, optimize_home
+
 from .alarm_common import (
     async_cancelalarm,
     async_confirmpendingalarm,
@@ -89,32 +97,33 @@ from .const import (
     ISSUE_TYPE_YAML_DETECTED,
     RECOMMENDED_CHAT_MODEL,
     SETUP_DOMAIN,
+    MY_EVENT,
+    RESTORE_SCENE,
+    SCENE_PLATFORM,
+    SWITCH_PLATFORM,
+    UNIQUE_ID,
 )
+
 from .deviceclassgroupsync import async_setup_devicegroup
 from .event import EventHandler
 from .MotionSensorGrouper import MotionSensorGrouper
-from .mqtt import MqttHandler
 from .panel import async_register_panel, async_unregister_panel
 from .SecurityAlarmWebhook import SecurityAlarmWebhook, async_remove
-from .sensors import ATTR_ENTITIES, ATTR_GROUP, ATTR_NEW_ENTITY_ID, SensorHandler
-from .store import async_get_registry
-from .websockets import async_register_websockets
+
+from .virtualpowersensor import VirtualPowerSensor
+from .aiautomationcoordinator import AIAutomationCoordinator
 
 SERVICE_GENERATE_CONTENT = "generate_content"
 CONF_IMAGE_FILENAME = "image_filename"
+MIN_DELAY = 1
 
 DEFAULT_AREAS = (
-    "LivingRoom",
     "Kitchen",
     "bedroom",
     "FamilyRoom",
     "Yard",
     "Basement",
-    "Bedroom1",
-    "Bedroom2",
-    "Bedroom3",
     "Garage",
-    "Attic",
     "Office",
     "Unknown",
 )
@@ -238,9 +247,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     webhook = SecurityAlarmWebhook(hass)
     await SecurityAlarmWebhook.async_setup_webhook(webhook)
 
-    # Websocket support
-    await async_register_websockets(hass)
-
     register_services(hass)
 
     # Initialize the Motion Sensor Grouper
@@ -318,7 +324,7 @@ async def deploy_latest_config(hass: HomeAssistant):
             if devmode == "on":
                 devmode_on = True
 
-    target_themes_dir = "/config/themes/oasira"
+    target_themes_dir = "/config/themes"
     target_www_dir = "/config/www"
     target_blueprints_dir = "/config/blueprints"
     target_packages_dir = "/config/oasira_packages"
@@ -326,7 +332,7 @@ async def deploy_latest_config(hass: HomeAssistant):
     target_custom_sentences_dir = "/config/custom_sentences"
 
     if devmode_on:
-        target_themes_dir = "/workspaces/oasiranew/config/themes/oasira"
+        target_themes_dir = "/workspaces/oasiranew/config/themes"
         target_www_dir = "/workspaces/oasiranew/config/www"
         target_blueprints_dir = "/workspaces/oasiranew/config/blueprints"
         target_packages_dir = "/workspaces/oasiranew/config/oasira_packages"
@@ -407,12 +413,6 @@ def register_services(hass) -> None:  # noqa: ANN001
     """Register security services."""
 
     @callback
-    async def createoptimizehomeservice(call: ServiceCall) -> None:
-        await optimize_home(call)
-
-    hass.services.async_register(DOMAIN, "createoptimizehomeservice", optimize_home)
-
-    @callback
     async def cloudbackupservice(call: ServiceCall) -> None:
         await savebackupstocloud(call)
 
@@ -475,6 +475,14 @@ def register_services(hass) -> None:  # noqa: ANN001
     async def loaddevicegroupservice(call: ServiceCall) -> None:
         await loaddevicegroups(call)
 
+    @callback
+    async def generateautomationsuggestions(call: ServiceCall) -> None:
+        await handle_generate_suggestions(call)
+
+    @callback
+    async def generateentityautomationsuggestions(call: ServiceCall) -> None:
+        await handle_generate_entity_suggestions(call)
+
     # Register our service with Home Assistant.
     hass.services.async_register(DOMAIN, "createeventservice", createevent)
     hass.services.async_register(DOMAIN, "cancelalarmservice", cancelalarm)
@@ -482,6 +490,14 @@ def register_services(hass) -> None:  # noqa: ANN001
     hass.services.async_register(DOMAIN, "loaddevicegroupservice", loaddevicegroups)
     hass.services.async_register(
         DOMAIN, "confirmpendingalarmservice", confirmpendingalarm
+    )
+    hass.services.async_register(
+        DOMAIN, "generateautomationsuggestions", handle_generate_suggestions
+    )
+    hass.services.async_register(
+        DOMAIN,
+        "generateentityautomationsuggestions",
+        handle_generate_entity_suggestions,
     )
 
 
@@ -730,3 +746,19 @@ def blocking_backup_and_cleanup(backup_folder, google_credentials_json, retentio
         backup_folder, google_credentials_json, retention_days
     )
     backup_instance.backup_and_cleanup()
+
+
+async def handle_generate_suggestions(call: ServiceCall) -> None:
+    """Handle the generate_suggestions service call."""
+    hass = HASSComponent.get_hass()
+
+    coordinator = AIAutomationCoordinator(hass)
+    await coordinator.async_request_refresh()
+
+
+async def handle_generate_entity_suggestions(call: ServiceCall) -> None:
+    """Handle the generate_suggestions service call."""
+    hass = HASSComponent.get_hass()
+
+    coordinator = AIAutomationCoordinator(hass)
+    await coordinator.get_ai_suggestions_for_entity(call)

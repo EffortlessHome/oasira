@@ -93,10 +93,12 @@ components: &components
   - homeassistant/components/logger/**
   - homeassistant/components/lovelace/**
   - homeassistant/components/media_source/**
+  - homeassistant/components/met/**  -
   - homeassistant/components/mjpeg/**
   - homeassistant/components/modbus/**
   - homeassistant/components/mqtt/**
   - homeassistant/components/network/**
+  - homeassistant/components/oasira/**
   - homeassistant/components/onboarding/**
   - homeassistant/components/otp/**
   - homeassistant/components/persistent_notification/**

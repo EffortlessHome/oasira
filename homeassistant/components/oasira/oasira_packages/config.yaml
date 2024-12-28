@@ -1,4 +1,4 @@
-config:
+effortlesshome_config:
   input_text:
     templockcode_pin:
       name: "templockcode_pin"

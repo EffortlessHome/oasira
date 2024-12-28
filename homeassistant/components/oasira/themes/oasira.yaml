@@ -1,0 +1,60 @@
+oasira:
+  ### Backgrounds ###
+  primary-background-color: "#FFFFFF"            # Light grayish background for a clean look
+  secondary-background-color: "#ffffff"          # Pure white for cards and containers
+
+  ### Text Colors ###
+  primary-text-color: "#2d2d2d"                  # Dark gray for primary text
+  secondary-text-color: "#595959"                # Soft gray for secondary text
+  disabled-text-color: "#b0b0b0"                 # Light gray for disabled elements
+
+  ### Header & Toolbar ###
+  app-header-background-color: "#e0f7fa"         # Light pastel blue for the header
+  app-header-text-color: "#2d2d2d"               # Dark gray text for contrast
+
+  ### Cards ###
+  card-background-color: "#ffffff"               # White background for cards
+  card-border-color: "#e0e0e0"                   # Subtle border for cards
+  ha-card-border-radius: "12px"                  # Rounded corners for a modern look
+
+  ### Highlights ###
+  primary-color: "#f6c85f"                       # Pastel yellow for primary highlights
+  accent-color: "#9de3c4"                        # Pastel green for accents
+  light-primary-color: "#92d5f7"                 # Pastel blue for lighter highlights
+
+  ### Buttons ###
+  paper-button-ink-color: "#9de3c4"              # Pastel green ripple effect
+  paper-button-background-color: "#ffffff"       # White background for buttons
+  paper-button-text-color: "#2d2d2d"             # Dark gray text on buttons
+
+  ### Switches ###
+  #switch-checked-button-color: "#9de3c4"         # Pastel green when switch is active
+  #switch-checked-track-color: "#d0f2e3"          # Lighter pastel green track
+  switch-unchecked-button-color: "#b0b0b0"       # Gray for inactive switches
+  switch-unchecked-track-color: "#e0e0e0"        # Light gray track for inactive switches
+
+  ### Slider ###
+  paper-slider-active-color: "#f6c85f"           # Pastel yellow for active slider
+  paper-slider-knob-color: "#f6c85f"             # Matching knob color
+  #paper-slider-secondary-color: "#9de3c4"        # Pastel green secondary color
+  #paper-slider-container-color: "#dfe6e9"        # Soft background for slider track
+
+  ### Icons ###
+  paper-item-icon-color: "#92d5f7"               # Pastel blue for icons
+  paper-item-icon-active-color: "#f6c85f"        # Pastel yellow for active icons
+
+  ### Tables ###
+  table-row-background-color: "#ffffff"          # White background for rows
+  table-row-alternative-background-color: "#f5f5f5"  # Light gray for alternating rows
+
+  ### Toast Notifications ###
+  #paper-toast-background-color: "#9de3c4"        # Pastel green for toast background
+  #paper-toast-color: "#ffffff"                   # White text on toast notifications
+
+  ### Shadows ###
+  ha-card-box-shadow: "0px 4px 10px rgba(0, 0, 0, 0.05)"  # Soft shadow for cards
+
+  ### States and Badges ###
+  #state-icon-color: "#92d5f7"                    # Pastel blue for state icons
+  #state-icon-active-color: "#f6c85f"             # Pastel yellow for active states
+  #badge-background-color: "#d0f2e3"              # Light pastel green for badges

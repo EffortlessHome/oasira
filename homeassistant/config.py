@@ -61,7 +61,7 @@ default_config:
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes
-  development_repo: /media/develop/oasiranew/frontend
+  development_repo: /usr/src/homeassistant/frontend
 
 automation: !include {AUTOMATION_CONFIG_PATH}
 script: !include {SCRIPT_CONFIG_PATH}

@@ -40,5 +40,5 @@
     "google-generativeai==0.8.2"
   ],
 
-  "version": "1.4.9"
+  "version": "1.0"
 }

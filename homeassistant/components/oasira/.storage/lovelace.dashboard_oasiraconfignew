@@ -1,0 +1,261 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.dashboard_oasiraconfignew",
+  "data": {
+    "config": {
+      "strategy": {
+        "type": "custom:mushroom-strategy",
+        "options": {
+          "home_view": {
+            "hidden": [
+              "areasTitle",
+              "chips",
+              "areas",
+              "persons"
+            ]
+          },
+          "views": {
+            "light": {
+              "hidden": true
+            },
+            "switch": {
+              "hidden": true
+            },
+            "cover": {
+              "hidden": true
+            },
+            "climate": {
+              "hidden": true
+            },
+            "camera": {
+              "hidden": true
+            }
+          },
+          "extra_cards": [
+            {
+              "type": "button",
+              "show_name": true,
+              "show_icon": true,
+              "tap_action": {
+                "action": "navigate",
+                "navigation_path": "/config/general"
+              },
+              "name": "Edit System",
+              "show_state": false
+            },
+            {
+              "type": "button",
+              "show_name": true,
+              "show_icon": true,
+              "tap_action": {
+                "action": "navigate",
+                "navigation_path": "/config/areas/dashboard"
+              },
+              "name": "Edit Areas",
+              "show_state": false
+            },
+            {
+              "type": "button",
+              "show_name": true,
+              "show_icon": true,
+              "tap_action": {
+                "action": "navigate",
+                "navigation_path": "/config/integrations"
+              },
+              "name": "Edit Integrations",
+              "show_state": false
+            },
+            {
+              "type": "button",
+              "show_name": true,
+              "show_icon": true,
+              "tap_action": {
+                "action": "navigate",
+                "navigation_path": "/config/automation/dashboard"
+              },
+              "name": "Edit Automations",
+              "show_state": false
+            },
+            {
+              "type": "button",
+              "show_name": true,
+              "show_icon": true,
+              "tap_action": {
+                "action": "navigate",
+                "navigation_path": "/config/person"
+              },
+              "name": "Edit People",
+              "show_state": false
+            }
+          ],
+          "domains": {
+            "_": {
+              "hide_config_entities": false
+            }
+          },
+          "extra_views": [
+            {
+              "strategy": {
+                "type": "custom:battery-view-strategy",
+                "config": null
+              },
+              "title": "Batteries",
+              "path": "battery",
+              "minColumnWidth": 50
+            },
+            {
+              "strategy": {
+                "type": "custom:grid-view-strategy",
+                "config": {
+                  "rows": [
+                    {
+                      "title": "Identify Devices",
+                      "card": {
+                        "type": "tile",
+                        "entity": "$entity"
+                      },
+                      "filter": {
+                        "include": [
+                          {
+                            "type": "domain",
+                            "comparator": "equal",
+                            "value": "button"
+                          },
+                          {
+                            "type": "entity",
+                            "comparator": "match",
+                            "value": ".*_identify"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "path": "buttons",
+              "title": "Buttons"
+            },
+            {
+              "strategy": {
+                "type": "custom:grid-view-strategy",
+                "config": {
+                  "rows": [
+                    {
+                      "title": null,
+                      "card": {
+                        "type": "tile",
+                        "entity": "$entity"
+                      },
+                      "filter": {
+                        "include": [
+                          {
+                            "type": "domain",
+                            "comparator": "equal",
+                            "value": "sensor"
+                          },
+                          {
+                            "type": "entity",
+                            "comparator": "match",
+                            "value": ".*_power"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "path": "power",
+              "title": "Power"
+            },
+            {
+              "strategy": {
+                "type": "custom:update-view-strategy",
+                "config": null
+              },
+              "title": "Updates",
+              "path": "updates"
+            },
+            {
+              "type": "panel",
+              "path": "backups",
+              "title": "Backups",
+              "cards": [
+                {
+                  "type": "iframe",
+                  "url": "/local/drive.html",
+                  "aspect_ratio": "50%"
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "path": "area",
+              "title": "Area",
+              "cards": [
+                {
+                  "type": "iframe",
+                  "url": "/local/setarea.html",
+                  "aspect_ratio": "50%"
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "path": "matter",
+              "title": "Matter",
+              "cards": [
+                {
+                  "type": "iframe",
+                  "url": "http://192.168.1.154:8482",
+                  "aspect_ratio": "50%"
+                }
+              ]
+            },
+            {
+              "type": "sections",
+              "max_columns": 4,
+              "title": "Oasira",
+              "path": "oasira",
+              "sections": [
+                {
+                  "type": "grid",
+                  "cards": [
+                    {
+                      "type": "entities",
+                      "entities": [
+                        {
+                          "entity": "oasira.activebaseplan"
+                        },
+                        {
+                          "entity": "oasira.activemedicalalertplan"
+                        },
+                        {
+                          "entity": "oasira.activemonitoringplan"
+                        },
+                        {
+                          "entity": "oasira.activesecurityplan"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "entities",
+                      "entities": [
+                        {
+                          "entity": "oasira.fullname"
+                        },
+                        {
+                          "entity": "oasira.phonenumber"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

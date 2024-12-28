@@ -3,6 +3,12 @@ import logging  # noqa: D100, EXE002
 from homeassistant.components.group import (
     DOMAIN as GROUP_DOMAIN,  # type: ignore  # noqa: PGH003
 )
+from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity_platform import async_get_platforms
+from homeassistant.helpers.event import async_track_state_change
+from homeassistant.helpers.entity import async_generate_entity_id
+from homeassistant.components.light import DOMAIN as LIGHT_DOMAIN
+from .sensor import VirtualPowerSensor
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -50,6 +56,7 @@ class DeviceClassGroupSync:
 # Example usage inside your custom integration
 async def async_setup_devicegroup(hass) -> bool:  # noqa: ANN001
     """Set up the integration."""
+
     # Initialize the group sync for 'smoke' device_class
     smokealarm_sync = DeviceClassGroupSync(hass, "smokealarm_sensors_group", "smoke")
     await smokealarm_sync.find_and_sync_devices()

@@ -687,3 +687,6 @@ RESTORE_SCENE = "scene"
 SCENE_PLATFORM = "scene"
 UNIQUE_ID = "presence_simulation_oasira"
 MY_EVENT = "presence_simulation_change"
+
+DEFAULT_MAX_TOKENS = 500  # Conservative default example from 500 to 16384 for gpt-4o-mini output limit, other models are different
+DEFAULT_TEMPERATURE = 0.7
