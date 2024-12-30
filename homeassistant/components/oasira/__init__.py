@@ -615,6 +615,7 @@ async def cleanmotionfiles(calldata):
         _LOGGER.error(f"Error deleting snapshots: {process.stderr.decode()}")
 
 
+
 async def async_send_message(calldata):
     """Send a notification message to a person’s device trackers."""
     _LOGGER.debug("In async_send_message")
