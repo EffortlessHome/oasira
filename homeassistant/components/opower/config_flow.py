@@ -6,13 +6,24 @@ from collections.abc import Mapping
 import logging
 from typing import Any
 
-from opower import (
-    CannotConnect,
-    InvalidAuth,
+
+from .exceptions import CannotConnect, InvalidAuth
+from .opower import (
+    Account,
+    AggregateType,
+    CostRead,
+    Forecast,
+    MeterType,
     Opower,
+    ReadResolution,
+    UnitOfMeasure,
+    UsageRead,
+    get_supported_utilities,
     get_supported_utility_names,
     select_utility,
 )
+
+
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult

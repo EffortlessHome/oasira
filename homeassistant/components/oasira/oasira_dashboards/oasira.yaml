@@ -1,0 +1,646 @@
+---
+button_card_templates: !include_dir_merge_named "../www/custom_cards/"
+
+ulm_language_variables:
+  variables:
+    ulm_currency: "$"
+    ulm_updates_available: "Updates available!"
+    ulm_no_updates_available: "No updates available"
+    ulm_ophaling: "Garbage collection!"
+    ulm_geen_ophaling: "No collections"
+    ulm_volgende_ophaling: "Next collections"
+    ulm_morning: "Good morning"
+    ulm_afternoon: "Good afternoon"
+    ulm_evening: "Good evening"
+    ulm_hello: "Hello"
+    ulm_volume: "Volume"
+    ulm_popups_color: "Color"
+    ulm_radar: "Radar"
+    ulm_popup_total: "Total"
+
+title: "Oasira"
+theme: "oasira-desktop"
+background: "var(--background-image)"
+views:
+  - type: sections
+    max_columns: 4
+    title: Home
+    path: 0
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Main
+          - type: "vertical-stack"
+            cards:
+              - type: custom:weather-card
+                entity: weather.forecast_home
+
+              - type: "custom:auto-entities"
+                card:
+                  type: "grid"
+                  columns: 2
+                  square: false
+                card_param: "cards"
+                filter:
+                  include:
+                    - domain: "person"
+                      options:
+                        type: tile
+                        show_entity_picture: true
+                  exclude:
+                    - state: "unavailable"
+                    - hidden_by: "user"
+
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Favorites
+          - type: "custom:auto-entities"
+            card:
+              type: horizontal-stack
+              square: false
+            card_param: "cards"
+            filter:
+              include:
+                - label: "favorite"
+                  domain: light
+                  options:
+                    type: "custom:button-card"
+                    template: "card_light"
+                    variables:
+                      ulm_card_light_enable_slider: true
+                      ulm_card_light_enable_color: true
+                      ulm_card_light_enable_popup: false
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+          - type: "custom:auto-entities"
+            card:
+              type: horizontal-stack
+              square: false
+            card_param: "cards"
+            filter:
+              include:
+                - label: "favorite"
+                  domain: cover
+                  options:
+                    type: "custom:button-card"
+                    template: card_cover
+                    variables:
+                      ulm_card_cover_enable_controls: true
+                      ulm_card_cover_enable_slider: false
+                      ulm_card_cover_color: "green"
+                      ulm_card_cover_enable_popup: false
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+          - type: "custom:auto-entities"
+            card:
+              type: horizontal-stack
+              square: false
+            card_param: "cards"
+            filter:
+              include:
+                - label: "favorite"
+                  domain: alarm_control_panel
+                  options:
+                      type: tile
+                      features:
+                        - type: alarm-modes
+                          modes:
+                            - armed_home
+                            - armed_away
+                            - disarmed
+                      state_content: state
+                      vertical: true
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+
+          - type: "custom:auto-entities"
+            card:
+              type: vertical-stack
+              square: false
+            card_param: "cards"
+            filter:
+              include:
+                - label: "favorite"
+                  domain: media_player
+                  options:
+                    type: custom:mini-media-player
+                    entity: this.entity_id
+                    artwork: full-cover
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Devices On
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+            filter:
+              include:
+                - domain: light
+              exclude:
+                - state: 'off'
+                - state: unavailable
+                - hidden_by: user
+                - entity_id: "light.all_light_group"
+            sort:
+              method: name
+          - type: custom:auto-entities
+            show_empty: false
+            card:
+              type: entities
+            filter:
+              include:
+                - domain: binary_sensor
+                  attributes:
+                    device_class: "motion"
+              exclude:
+                - state: 'off'
+                - state: unavailable
+                - hidden_by: user
+            sort:
+              method: name
+
+  - type: sections
+    max_columns: 4
+    title: Lights
+    path: ''
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Areas
+          - type: "custom:auto-entities"
+            card:
+              type: "grid"
+              columns: 2
+              square: false
+            card_param: "cards"
+
+            filter:
+              include:
+                - domain: "light"
+                  entity_id: "light.area_*"
+                  options:
+                    type: "custom:button-card"
+                    template: "card_light"
+                    variables:
+                      ulm_card_light_enable_slider: true
+                      ulm_card_light_enable_color: true
+                      ulm_card_light_enable_popup: false
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Lights
+          - type: "custom:auto-entities"
+            card:
+              type: "grid"
+              columns: 2
+              square: false
+            card_param: "cards"
+
+            filter:
+              include:
+                - domain: "light"
+                  options:
+                    type: "custom:button-card"
+                    template: "card_light"
+                    variables:
+                      ulm_card_light_enable_slider: true
+                      ulm_card_light_enable_color: true
+                      ulm_card_light_enable_popup: false
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+                - entity_id: "light.area_*"
+            sort:
+              method: name
+
+  - type: panel
+    title: Cameras
+    path: ''
+    cards:
+      - type: "custom:auto-entities"
+        card:
+          type: "grid"
+          square: false
+        card_param: "cards"
+
+        filter:
+          include:
+            - domain: "camera"
+              options:
+                type: "custom:button-card"
+                template: "custom_card_camera"
+                show_icon: false
+          exclude:
+            - state: "unavailable"
+            - hidden_by: "user"
+        sort:
+          method: name
+
+  - path: ''
+    type: panel
+    title: Snapshots
+    cards:
+      - type: custom:gallery-card
+        entities:
+          - path: media-source://media_source/local/snapshots/
+            recursive: true
+        menu_alignment: Responsive
+        maximum_files: 1000
+        file_name_format: YYYYMMDD-HHmmss
+        caption_format: M/D h:mm A
+        enable_date_search: false
+        search_date_folder_format: YYYYMMDD
+
+  - type: panel
+    title: Media
+    path: ''
+    cards:
+      - type: "custom:auto-entities"
+        card:
+          type: "grid"
+          square: false
+        card_param: "cards"
+        filter:
+          include:
+            - domain: "media_player"
+              options:
+                type: custom:mini-media-player
+                entity: this.entity_id
+                artwork: full-cover
+
+          exclude:
+            - state: "unavailable"
+            - hidden_by: "user"
+        sort:
+          method: name
+
+  - type: sections
+    max_columns: 4
+    title: Climate
+    path: ''
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Controls
+          - type: "custom:auto-entities"
+            card:
+              type: horizontal-stack
+              square: false
+            card_param: "cards"
+            filter:
+              include:
+                - domain: "climate"
+                  options:
+                    type: "custom:button-card"
+                    template: "card_thermostat"
+                    variables:
+                      ulm_card_thermostat_enable_collapse: true
+                      ulm_card_thermostat_enable_controls: true
+                      ulm_card_thermostat_enable_hvac_modes: true
+                      ulm_card_thermostat_enable_popup: false
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Sensors
+          - type: "custom:auto-entities"
+            card:
+              type: horizontal-stack
+              square: false
+            card_param: "cards"
+
+            filter:
+              include:
+                - domain: sensor
+                  attributes:
+                    device_class: temperature
+                  options:
+                    type: "custom:button-card"
+                    template: card_graph
+                    variables:
+                      entity: "this.entity_id"
+                      ulm_card_graph_type: fill
+                      ulm_card_graph_hours: 24
+                      ulm_card_graph_entity: "this.entity_id"
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+          - type: "custom:auto-entities"
+            card:
+              type: horizontal-stack
+              square: false
+            card_param: "cards"
+
+            filter:
+              include:
+                - domain: sensor
+                  attributes:
+                    device_class: humidity
+                  options:
+                    type: "custom:button-card"
+                    template: card_graph
+                    variables:
+                      entity: "this.entity_id"
+                      ulm_card_graph_type: fill
+                      ulm_card_graph_hours: 24
+                      ulm_card_graph_entity: "this.entity_id"
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+  - type: sections
+    max_columns: 5
+    title: Security
+    path: ''
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Security Alarm
+          - type: vertical-stack
+            cards:
+              - type: tile
+                features:
+                  - type: alarm-modes
+                    modes:
+                      - armed_home
+                      - armed_away
+                      - disarmed
+                entity: alarm_control_panel.oasira_alarm_panel
+                state_content: state
+                vertical: true
+                name: Security
+
+          - type: vertical-stack
+            cards:
+              - type: entities
+                entities:
+                  - entity: sensor.alarm_id_sensor
+                  - entity: sensor.alarm_last_event_sensor
+                  - entity: sensor.alarm_status_sensor
+                  - entity: sensor.alarm_owner_id_sensor
+                  - entity: binary_sensor.monitoring_alarm_sensor
+                  - entity: binary_sensor.medical_alert_sensor
+              - type: horizontal-stack
+                cards:
+                  - show_name: true
+                    show_icon: true
+                    type: button
+                    tap_action:
+                      action: perform-action
+                      target: {}
+                      perform_action: oasira.getalarmstatusservice
+                    name: Get Latest Alarm Status
+                  - show_name: true
+                    show_icon: true
+                    type: button
+                    tap_action:
+                      action: perform-action
+                      target: {}
+                      perform_action: oasria.cancelalarmservice
+                    name: Cancel Alarm
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Doors & Locks
+          - type: custom:auto-entities
+            card:
+              type: vertical-stack
+            card_param: cards
+            filter:
+              include:
+                - domain: lock
+                  options:
+                    type: "custom:button-card"
+                    template: "custom_card_eraycetinay_lock"
+                    variables:
+                      ulm_custom_card_eraycetinay_lock_tap_control: true
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+          - type: custom:auto-entities
+            card:
+              type: vertical-stack
+            card_param: cards
+            filter:
+              include:
+                - domain: cover
+                  options:
+                    type: "custom:button-card"
+                    template: card_cover
+                    variables:
+                      ulm_card_cover_enable_controls: true
+                      ulm_card_cover_enable_slider: false
+                      ulm_card_cover_color: "green"
+                      ulm_card_cover_enable_popup: false
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+          - type: vertical-stack
+            cards:
+              - type: entities
+                entities:
+                  - entity: input_text.ownerslockcode_pin
+                    name: Owner PIN
+                  - entity: input_text.templockcode_pin
+                    name: Temp Code
+                show_header_toggle: false
+                state_color: false
+              - type: horizontal-stack
+                cards:
+                  - show_name: true
+                    show_icon: false
+                    type: button
+                    tap_action:
+                      action: perform-action
+                      target: {}
+                      perform_action: script.eh_set_master_door_code
+                    name: Set Master Code
+                    show_state: false
+                  - show_name: true
+                    show_icon: false
+                    type: button
+                    tap_action:
+                      action: perform-action
+                      target: {}
+                      perform_action: script.eh_set_temporary_door_code
+                    name: Set Temp Code
+                    show_state: false
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Sensors
+
+          - type: custom:auto-entities
+            card:
+              type: grid
+              columns: 2
+              square: false
+            card_param: cards
+            filter:
+              include:
+                - domain: binary_sensor
+                  attributes:
+                    device_class: motion
+                  options:
+                    type: "custom:button-card"
+                    template: card_binary_sensor
+                    variables:
+                      ulm_card_binary_sensor_alert: true
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+          - type: custom:auto-entities
+            card:
+              type: grid
+              columns: 2
+              square: false
+            card_param: cards
+            filter:
+              include:
+                - domain: binary_sensor
+                  attributes:
+                    device_class: door
+                  options:
+                    type: "custom:button-card"
+                    template: card_binary_sensor
+                    variables:
+                      ulm_card_binary_sensor_alert: true
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+  - path: power
+    title: Power
+    cards:
+      - type: "custom:auto-entities"
+        card:
+          type: "grid"
+          columns: 2
+          square: false
+        card_param: "cards"
+
+        filter:
+          include:
+            - entity_id: "*_power"
+              options:
+                type: "custom:button-card"
+                template: card_graph
+                variables:
+                  entity: "this.entity_id"
+                  ulm_card_graph_type: fill
+                  ulm_card_graph_hours: 24
+                  ulm_card_graph_entity: "this.entity_id"
+          exclude:
+            - state: "unavailable"
+            - hidden_by: "user"
+        sort:
+          method: name
+
+      - type: "custom:auto-entities"
+        card:
+          type: "grid"
+          columns: 2
+          square: false
+        card_param: "cards"
+
+        filter:
+          include:
+            - attributes:
+                unit_of_measurement: "%"
+                device_class: "battery"
+              options:
+                type: "custom:button-card"
+                template: "card_battery"
+                variables:
+                  ulm_card_battery_battery_state_entity_id: "this.entity_id"
+                  ulm_card_battery_battery_level_danger: 30
+                  ulm_card_battery_battery_level_warning: 80
+          exclude:
+            - state: "unavailable"
+            - hidden_by: "user"
+        sort:
+          method: name
+
+  - type: sections
+    max_columns: 5
+    title: Water
+    path: ''
+    sections:
+
+      - type: grid
+        cards:
+
+          - type: "custom:auto-entities"
+            card:
+              type: "grid"
+              square: false
+              columns: 1
+            card_param: "cards"
+            filter:
+              include:
+                - label: "oasirawater"
+                  domain: "switch"
+                  options:
+                    type: "custom:button-card"
+                    template: card_generic
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: name
+
+

@@ -1,0 +1,210 @@
+---
+button_card_templates: !include_dir_merge_named "../www/custom_cards/"
+
+ulm_language_variables:
+  variables:
+    ulm_currency: "$"
+    ulm_updates_available: "Updates available!"
+    ulm_no_updates_available: "No updates available"
+    ulm_ophaling: "Garbage collection!"
+    ulm_geen_ophaling: "No collections"
+    ulm_volgende_ophaling: "Next collections"
+    ulm_morning: "Good morning"
+    ulm_afternoon: "Good afternoon"
+    ulm_evening: "Good evening"
+    ulm_hello: "Hello"
+    ulm_volume: "Volume"
+    ulm_popups_color: "Color"
+    ulm_radar: "Radar"
+    ulm_popup_total: "Total"
+
+title: "Oasira Config"
+theme: "oasira-desktop"
+background: "var(--background-image)"
+views:
+  - type: sections
+    max_columns: 4
+    title: Oasira
+    path: oasira
+    sections:
+      - type: grid
+        cards:
+          - type: entities
+            entities:
+              - entity: oasira.activebaseplan
+              - entity: oasira.activemedicalalertplan
+              - entity: oasira.activemonitoringplan
+              - entity: oasira.activesecurityplan
+          - type: entities
+            entities:
+              - entity: oasira.fullname
+              - entity: oasira.phonenumber
+
+      - type: grid
+        cards:
+
+          - type: custom:button-card
+            template: card_navigate
+            variables:
+              ulm_card_navigate_path: /config/general
+              ulm_card_navigate_title: Edit System Settings
+              ulm_card_navigate_icon: mdi:system
+              ulm_card_navigate_color: var(--color-red)
+
+          - type: custom:button-card
+            template: card_navigate
+            variables:
+              ulm_card_navigate_path: /config/areas/dashboard
+              ulm_card_navigate_title: Edit Areas
+              ulm_card_navigate_icon: mdi:area
+              ulm_card_navigate_color: var(--color-green)
+          - type: custom:button-card
+            template: card_navigate
+            variables:
+              ulm_card_navigate_path: /config/integrations
+              ulm_card_navigate_title: Edit Integrations
+              ulm_card_navigate_icon: mdi:system
+              ulm_card_navigate_color: var(--color-blue)
+      - type: grid
+        cards:
+
+          - type: custom:button-card
+            template: card_navigate
+            variables:
+              ulm_card_navigate_path: /config/automation/dashboard
+              ulm_card_navigate_title: Edit Automations
+              ulm_card_navigate_icon: mdi:system
+              ulm_card_navigate_color: var(--color-red)
+          - type: custom:button-card
+            template: card_navigate
+            variables:
+              ulm_card_navigate_path: /config/person
+              ulm_card_navigate_title: Edit People
+              ulm_card_navigate_icon: mdi:system
+              ulm_card_navigate_color: var(--color-green)
+          - type: custom:button-card
+            template: card_navigate
+            variables:
+              ulm_card_navigate_path: /config/backup/overview
+              ulm_card_navigate_title: Backups
+              ulm_card_navigate_icon: mdi:system
+              ulm_card_navigate_color: var(--color-blue)
+
+          - type: button
+            name: AI Automation Suggestions
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: perform-action
+              perform_action: oasira.generateautomationsuggestions
+              target: {}
+
+          - type: button
+            name: AI Suggestions For All Lights
+            show_name: true
+            show_icon: true
+            tap_action:
+              action: perform-action
+              perform_action: oasira.generateentityautomationsuggestions
+              data:
+                entity_id: light.all_light_groups
+
+  - type: sections
+    max_columns: 4
+    title: Identify
+    path: ''
+    sections:
+      - type: grid
+        cards:
+          - type: "custom:auto-entities"
+            card:
+              type: "grid"
+              columns: 2
+              square: false
+            card_param: "cards"
+
+            filter:
+              include:
+                - domain: "button"
+                  entity_id: "*_identify"
+                  options:
+                    type: "custom:button-card"
+                    template: card_generic
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+            sort:
+              method: entity_id
+
+
+  - type: sections
+    max_columns: 4
+    title: Updates
+    path: ''
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Firmware
+          - type: "custom:auto-entities"
+            card:
+              type: "grid"
+              square: false
+            card_param: "cards"
+
+            filter:
+              include:
+                - domain: "update"
+                  entity_id: "*_firmware"
+                  options:
+                    type: "custom:button-card"
+                    template: card_generic
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+      - type: grid
+        cards:
+          - type: heading
+            heading: Other
+          - type: "custom:auto-entities"
+            card:
+              type: "grid"
+              square: false
+            card_param: "cards"
+
+            filter:
+              include:
+                - domain: "update"
+                  options:
+                    type: "custom:button-card"
+                    template: card_generic
+              exclude:
+                - state: "unavailable"
+                - hidden_by: "user"
+                - entity_id: "*_firmware"
+
+  - type: panel
+    path: area
+    title: Area
+    cards:
+      - type: custom:ha-data-editor-card
+  - type: panel
+    path: labels
+    title: Labels
+    cards:
+      - type: custom:entity-label-card
+
+  - type: panel
+    path: matter
+    title: Matter
+    cards:
+      - type: iframe
+        url: http://192.168.1.154:8482
+        aspect_ratio: 50%
+  - type: panel
+    path: backups
+    title: Backups
+    cards:
+      - type: iframe
+        url: /local/drive.html
+        aspect_ratio: 50%

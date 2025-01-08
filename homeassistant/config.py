@@ -62,6 +62,8 @@ default_config:
 frontend:
   themes: !include_dir_merge_named themes
   development_repo: /usr/src/homeassistant/frontend
+  extra_module_url:
+    - /local/oasira/custom-brand-icons/custom-brand-icons.js
 
 automation: !include {AUTOMATION_CONFIG_PATH}
 script: !include {SCRIPT_CONFIG_PATH}
@@ -69,7 +71,6 @@ scene: !include {SCENE_CONFIG_PATH}
 
 homeassistant:
   packages: !include_dir_merge_named oasira_packages/
-  customize: !include oasira_customize.yaml
   auth_providers:
     - type: oasira
       oasira_systemid: ""
@@ -80,6 +81,23 @@ http:
   trusted_proxies:
     - 192.168.1.0/24
     - 192.168.0.0/24
+
+lovelace:
+  mode: storage
+  dashboards:
+    lovelace-oasira:
+      mode: yaml
+      title: Oasira
+      icon: phu:nest-mini-alt
+      show_in_sidebar: true
+      filename: oasira_dashboards/oasira.yaml
+    lovelace-oasira-config:
+      mode: yaml
+      title: Oasira Config
+      icon: phu:ubiquiti-ap
+      show_in_sidebar: true
+      filename: oasira_dashboards/oasira_config.yaml
+      require_admin: true
 
     """
 DEFAULT_SECRETS = """

@@ -20,7 +20,6 @@ from homeassistant.helpers.entity_registry import (
 from homeassistant.helpers.issue_registry import IssueSeverity, async_create_issue
 from homeassistant.util import slugify
 
-from .auto_lights import AutoLights
 from .const import DOMAIN, ISSUE_TYPE_INVALID_AREA, NAME, RELEVANT_DOMAINS, VERSION
 from .ha_helpers import get_all_entities, is_valid_entity
 
@@ -68,8 +67,6 @@ class AutoArea:
     async def async_initialize(self):
         """Subscribe to area changes and reload if necessary."""
         _LOGGER.info("%s: Initializing after HA start", self.area_name)
-        self.auto_lights = AutoLights(self)
-        await self.auto_lights.initialize()
 
     def cleanup(self):
         """Deinitialize this area."""

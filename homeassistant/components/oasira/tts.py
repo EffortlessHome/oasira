@@ -64,17 +64,6 @@ async def async_get_engine(
     return GoogleProvider(hass, "en", "com.ai")
 
 
-# async def async_setup_entry(
-#    hass: HomeAssistant,
-#    config_entry: ConfigEntry,
-#    async_add_entities: AddEntitiesCallback,
-# ) -> None:
-#    """Set up Google Translate speech platform via config entry."""
-#    default_language = "en"  # config_entry.data[CONF_LANG]
-#    default_tld = "com.ai"  # config_entry.data[CONF_TLD]
-#    async_add_entities([GoogleTTSEntity(config_entry, default_language, default_tld)])
-
-
 class GoogleTTSEntity(TextToSpeechEntity):
     """The Google speech API entity."""
 

@@ -107,7 +107,6 @@ from .const import (
 from .deviceclassgroupsync import async_setup_devicegroup
 from .event import EventHandler
 from .MotionSensorGrouper import MotionSensorGrouper
-from .panel import async_register_panel, async_unregister_panel
 from .SecurityAlarmWebhook import SecurityAlarmWebhook, async_remove
 
 from .virtualpowersensor import VirtualPowerSensor
@@ -308,13 +307,13 @@ async def deploy_latest_config(hass: HomeAssistant):
     print("in deploy latest config")
 
     integration_dir = os.path.dirname(os.path.abspath(__file__))
-    source_themes_dir = os.path.join(integration_dir, "themes/oasira")
-    source_www_dir = os.path.join(integration_dir, "www")
+
+    source_themes_dir = os.path.join(integration_dir, "themes")
     source_blueprints_dir = os.path.join(integration_dir, "blueprints")
     source_packages_dir = os.path.join(integration_dir, "oasira_packages")
-
-    source_custom_components_dir = os.path.join(integration_dir, "custom_components")
-    source_custom_sentences_dir = os.path.join(integration_dir, "custom_sentences")
+    source_cards_dir = os.path.join(integration_dir, "www/custom_cards")
+    source_oasira_dir = os.path.join(integration_dir, "wwww/oasira")
+    source_dashboard_dir = os.path.join(integration_dir, "oasira_dashboards")
 
     devmode_on = False
 
@@ -325,57 +324,48 @@ async def deploy_latest_config(hass: HomeAssistant):
                 devmode_on = True
 
     target_themes_dir = "/config/themes"
-    target_www_dir = "/config/www"
+    target_cards_dir = "/config/www/custom_cards"
+    target_oasira_dir = "/config/www/oasira"
     target_blueprints_dir = "/config/blueprints"
     target_packages_dir = "/config/oasira_packages"
-    target_custom_components_dir = "/config/custom_components"
-    target_custom_sentences_dir = "/config/custom_sentences"
+    target_dashboard_dir = "/config/oasira_dashboards"
 
     if devmode_on:
         target_themes_dir = "/workspaces/oasiranew/config/themes"
-        target_www_dir = "/workspaces/oasiranew/config/www"
         target_blueprints_dir = "/workspaces/oasiranew/config/blueprints"
         target_packages_dir = "/workspaces/oasiranew/config/oasira_packages"
-        target_custom_components_dir = "/workspaces/oasiranew/config/custom_components"
-        target_custom_sentences_dir = "/workspaces/oasiranew/config/custom_sentences"
+        target_cards_dir = "/workspaces/oasiranew/config/www/custom_cards"
+        target_oasira_dir = "/workspaces/oasiranew/config/www/oasira"
+        target_dashboard_dir = "/workspaces/oasiranew/config/oasira_dashboards"
 
     # Ensure destination directories exist
     os.makedirs(target_themes_dir, exist_ok=True)
-    os.makedirs(target_www_dir, exist_ok=True)
     os.makedirs(target_blueprints_dir, exist_ok=True)
     os.makedirs(target_packages_dir, exist_ok=True)
-    os.makedirs(target_custom_components_dir, exist_ok=True)
-    os.makedirs(target_custom_sentences_dir, exist_ok=True)
+    os.makedirs(target_cards_dir, exist_ok=True)
+    os.makedirs(target_oasira_dir, exist_ok=True)
+    os.makedirs(target_dashboard_dir, exist_ok=True)
 
     # Copy entire themes directory including subfolders and files
     if os.path.exists(source_themes_dir):
         shutil.copytree(source_themes_dir, target_themes_dir, dirs_exist_ok=True)
 
-    # Copy entire www directory including subfolders and files
-    if os.path.exists(source_www_dir):
-        shutil.copytree(source_www_dir, target_www_dir, dirs_exist_ok=True)
-
-    # Copy entire blueprints directory including subfolders and files
     if os.path.exists(source_blueprints_dir):
         shutil.copytree(
             source_blueprints_dir, target_blueprints_dir, dirs_exist_ok=True
         )
 
-    # Copy entire packages directory including subfolders and files
     if os.path.exists(source_packages_dir):
-        shutil.copytree(source_packages_dir, target_packages_dir, dirs_exist_ok=True)
+        shutil.copytree(source_packages_dir, target_cards_dir, dirs_exist_ok=True)
 
-    if os.path.exists(source_custom_components_dir):
-        shutil.copytree(
-            source_custom_components_dir,
-            target_custom_components_dir,
-            dirs_exist_ok=True,
-        )
+    if os.path.exists(source_cards_dir):
+        shutil.copytree(source_cards_dir, target_cards_dir, dirs_exist_ok=True)
 
-    if os.path.exists(source_custom_sentences_dir):
-        shutil.copytree(
-            source_custom_sentences_dir, target_custom_sentences_dir, dirs_exist_ok=True
-        )
+    if os.path.exists(source_oasira_dir):
+        shutil.copytree(source_oasira_dir, target_oasira_dir, dirs_exist_ok=True)
+
+    if os.path.exists(source_dashboard_dir):
+        shutil.copytree(source_dashboard_dir, target_dashboard_dir, dirs_exist_ok=True)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -394,9 +384,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
             "tts",
         ],
     )
-    # hass.data[DOMAIN].pop(entry.entry_id)
-
-    # await SecurityAlarmWebhook.async_remove(hass)
 
     return True
 
@@ -472,10 +459,6 @@ def register_services(hass) -> None:  # noqa: ANN001
         await confirmpendingalarm(call)
 
     @callback
-    async def loaddevicegroupservice(call: ServiceCall) -> None:
-        await loaddevicegroups(call)
-
-    @callback
     async def generateautomationsuggestions(call: ServiceCall) -> None:
         await handle_generate_suggestions(call)
 
@@ -487,7 +470,6 @@ def register_services(hass) -> None:  # noqa: ANN001
     hass.services.async_register(DOMAIN, "createeventservice", createevent)
     hass.services.async_register(DOMAIN, "cancelalarmservice", cancelalarm)
     hass.services.async_register(DOMAIN, "getalarmstatusservice", getalarmstatus)
-    hass.services.async_register(DOMAIN, "loaddevicegroupservice", loaddevicegroups)
     hass.services.async_register(
         DOMAIN, "confirmpendingalarmservice", confirmpendingalarm
     )
@@ -613,7 +595,6 @@ async def cleanmotionfiles(calldata):
         _LOGGER.info("Successfully deleted old snapshots.")
     else:
         _LOGGER.error(f"Error deleting snapshots: {process.stderr.decode()}")
-
 
 
 async def async_send_message(calldata):
